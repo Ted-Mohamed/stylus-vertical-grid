@@ -21,31 +21,41 @@ var plugin = function () {
             return rootLineHeight * rootFontSize * factor
         }
 
-        s.define('type-set', function (size, factor) {
+
+        var typeSet = function (size, factor) {
             var rootFontSize = getNodeAt(lookupLocal('root-font-size'), 0)
             var rootLineHeight = getNodeAt(lookupLocal('root-line-height'), 0)
-            factor = factor || 1
 
-            if (rootFontSize && rootLineHeight) {
+            size = size
+            factor = factor || new nodes.Unit(1)
+            
+            if (size && rootFontSize && rootLineHeight) {
                 var fontSize = new nodes.Property(['font-size'], new nodes.Unit(size.val / rootFontSize.val, 'rem'));
-                var lineHeight = new nodes.Property(['line-height'], new nodes.Unit(verticalUnit(rootLineHeight.val, rootFontSize.val, factor.val)  / size.val, 'rem'));
+                var lineHeight = new nodes.Property(['line-height'], new nodes.Unit(rootLineHeight.val * rootFontSize.val * factor.val  / size.val));
             
                 var block = this.closestBlock;
 
                 block.nodes.splice(block.index + 1, 0, lineHeight)
                 return fontSize
             }
-        })
+        }
 
-        s.define('vr', function (factor) {
-            var rootFontSize = getNodeAt(lookupLocal('root-font-size'), 0)
+        typeSet.raw = true
+
+        var vr = function (factor) {
             var rootLineHeight = getNodeAt(lookupLocal('root-line-height'), 0)
-            factor = factor || 1
-
-            if (rootFontSize && rootLineHeight) {
-                return new nodes.Unit(verticalUnit(rootLineHeight.val, rootFontSize.val, factor.val), 'rem')
+            var factor = arguments[0].nodes[0] || new nodes.Unit(1)
+            console.log(factor.val)
+            factor = factor || new nodes.Unit(1)
+            if (rootLineHeight) {
+                return new nodes.Unit(rootLineHeight.val * factor.val, 'rem')
             }
-        })
+        }
+
+        vr.raw = true
+
+        s.define('type-set', typeSet)
+        s.define('vr', vr)
     }
 }
 
