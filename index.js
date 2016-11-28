@@ -17,26 +17,35 @@ var plugin = function () {
             return node;
         }
         
+        function verticalUnit(rootLineHeight, rootFontSize, factor) {
+            return rootLineHeight * rootFontSize * factor
+        }
 
         s.define('type-set', function (size, factor) {
-        //     font-size: unit(40px / root-font-size, 'rem')
-        // line-height: remove-unit(vertical-unit / 40px) * 2
             var rootFontSize = getNodeAt(lookupLocal('root-font-size'), 0)
             var rootLineHeight = getNodeAt(lookupLocal('root-line-height'), 0)
-            
-            if (rootFontSize && rootLineHeight) {
-                console.log(size.val / rootFontSize.val)
-                console.log(factor.val)
-                // var fontSize = new nodes.Property(['font-size'], );
-                // var lineHeight = new nodes.Property(['line-height'], );
-            
-                // var block = this.closestBlock;
+            factor = factor || 1
 
-                // block.nodes.splice(block.index + 1, 0, lineHeight)
-                // // block.index
-                // return fontSize
+            if (rootFontSize && rootLineHeight) {
+                var fontSize = new nodes.Property(['font-size'], new nodes.Unit(size.val / rootFontSize.val, 'rem'));
+                var lineHeight = new nodes.Property(['line-height'], new nodes.Unit(verticalUnit(rootLineHeight.val, rootFontSize.val, factor.val)  / size.val, 'rem'));
+            
+                var block = this.closestBlock;
+
+                block.nodes.splice(block.index + 1, 0, lineHeight)
+                return fontSize
             }
-        });
+        })
+
+        s.define('vr', function (factor) {
+            var rootFontSize = getNodeAt(lookupLocal('root-font-size'), 0)
+            var rootLineHeight = getNodeAt(lookupLocal('root-line-height'), 0)
+            factor = factor || 1
+
+            if (rootFontSize && rootLineHeight) {
+                return new nodes.Unit(verticalUnit(rootLineHeight.val, rootFontSize.val, factor.val), 'rem')
+            }
+        })
     }
 }
 
