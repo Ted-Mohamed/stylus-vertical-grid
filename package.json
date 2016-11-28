@@ -1,0 +1,22 @@
+{
+  "name": "stylus-vertical-grid",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "stylus -u ./ ./test/test.styl"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ted-Mohamed/stylus-vertical-grid.git"
+  },
+  "author": "Mohamed Ted Meftah <contact@mohamed-ted.me> (http://mohamed-ted.me)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Ted-Mohamed/stylus-vertical-grid/issues"
+  },
+  "homepage": "https://github.com/Ted-Mohamed/stylus-vertical-grid#readme",
+  "dependencies": {
+    "stylus": "*"
+  }
+}
