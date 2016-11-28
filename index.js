@@ -45,7 +45,6 @@ var plugin = function () {
         var vr = function (factor) {
             var rootLineHeight = getNodeAt(lookupLocal('root-line-height'), 0)
             var factor = arguments[0].nodes[0] || new nodes.Unit(1)
-            console.log(factor.val)
             factor = factor || new nodes.Unit(1)
             if (rootLineHeight) {
                 return new nodes.Unit(rootLineHeight.val * factor.val, 'rem')
