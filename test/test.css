@@ -1,0 +1,10 @@
+h1 {
+  color: #ffd700;
+  background-color: #ffc0cb;
+}
+@media (min-width: 500px) {
+  h1 {
+    color: #ffc0cb;
+    background-color: #ffd700;
+  }
+}
