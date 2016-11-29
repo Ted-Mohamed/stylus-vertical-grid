@@ -12,15 +12,18 @@ var plugin = function () {
         function lookupLocal(varName) {
             var i = s.evaluator.stack.length;
             while (i-- && !node) {
-                var node = s.evaluator.stack[i].lookup(varName);
+                var node = s.evaluator.stack[i].scope.lookup(varName)
             }
             return node;
         }
         
-        function verticalUnit(rootLineHeight, rootFontSize, factor) {
-            return rootLineHeight * rootFontSize * factor
+        function defineInStack(stack, name, node) {
+            var scope = stack[stack.length - 1].scope
+            var exp = new nodes.Expression()
+            exp.push(node)
+            var rootLineHeight = new nodes.Ident(name, exp)
+            scope.add(rootLineHeight)
         }
-
 
         var typeSet = function (size, factor) {
             var rootFontSize = getNodeAt(lookupLocal('root-font-size'), 0)
@@ -28,7 +31,7 @@ var plugin = function () {
 
             size = size
             factor = factor || new nodes.Unit(1)
-            
+
             if (size && rootFontSize && rootLineHeight) {
                 var fontSize = new nodes.Property(['font-size'], new nodes.Unit(size.val / rootFontSize.val, 'rem'));
                 var lineHeight = new nodes.Property(['line-height'], new nodes.Unit(rootLineHeight.val * rootFontSize.val * factor.val  / size.val));
@@ -39,20 +42,40 @@ var plugin = function () {
                 return fontSize
             }
         }
-
         typeSet.raw = true
 
         var vr = function (factor) {
             var rootLineHeight = getNodeAt(lookupLocal('root-line-height'), 0)
-            var factor = arguments[0].nodes[0] || new nodes.Unit(1)
-            factor = factor || new nodes.Unit(1)
+            factor = getNodeAt(factor, 0) || new nodes.Unit(1)
             if (rootLineHeight) {
                 return new nodes.Unit(rootLineHeight.val * factor.val, 'rem')
             }
         }
-
         vr.raw = true
 
+        function context(fontSize, lineHeight) {
+            fontSize = getNodeAt(fontSize, 0)
+            lineHeight = getNodeAt(lineHeight, 0)
+            if ((fontSize.nodeName == "ident" || fontSize.nodeName == "string") && sizesMap[fontSize.string]) {
+                lineHeight = sizesMap[fontSize.string][1]
+                fontSize = sizesMap[fontSize.string][0]
+            }
+
+            lineHeight = lineHeight || new nodes.Unit(1)
+            defineInStack(this.stack, 'root-font-size', fontSize)
+            defineInStack(this.stack, 'root-line-height', lineHeight)
+        }
+        context.raw = true
+
+        var sizesMap = {}
+        function setupTypeSizes(map) {
+            Object.keys(map.vals).forEach(function(key) {
+                sizesMap[key] = map.vals[key].nodes  
+            })
+        }
+        
+        s.define('type-context', context) 
+        s.define('setup-type-sizes', setupTypeSizes) 
         s.define('type-set', typeSet)
         s.define('vr', vr)
     }

@@ -1,14 +1,60 @@
-root-font-size = 14px
-root-line-height = 1.5
+setup-type-sizes({
+    small: 50px 15
+    medium: 30px 1
+    normal: 14px 
+})
+// type-context(small)
+type-context(20px, 12)
+// type-context(type-sizes.normal)
 
 h1 {
-    type-set: 20px 5
-    type-set: 20px
+    type-set: 40px 5
 
     top: vr(5)
     bottom: vr()
 }
 
+medium() {
+    @media (min-width: 100px) {
+        {block}
+    }
+}
+// type-sizes = {
+//     small: 50px 15
+//     medium: 30px 2
+// }
+// +medium(){
+//     type-context(type-sizes.small)
+//     h2 {
+//         width: vr()
+//     }
+// }
+
+
+
+
++medium(){
+    type-context('medium')
+    h2 {
+        type-set: 45px 1
+        width: vr()
+    }
+}
+h5 {
+    top: vr(5)
+    bottom: vr()
+}
+// +medium(){
+//     type-context(type-sizes.small)
+//     h7 {
+//         width: vr()
+//     }
+// }
+
+// h6 {
+//     top: vr(5)
+//     bottom: vr()
+// }
 // h1 {
 //     color: gold
 //     type-set: 20px
